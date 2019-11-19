@@ -1,0 +1,30 @@
+{{- if not .Values.existingConfigMap }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "gradle-build-cache-node.fullname" . }}
+  labels:
+    app: {{ template "gradle-build-cache-node.name" . }}
+    chart: {{ template "gradle-build-cache-node.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  config.yaml: |
+    version: 2
+    {{- if .Values.config.gradleEnterprice.enabled }}
+    registration:
+      serverAddress: {{ .Values.config.gradleEnterprice.serverAddress | quote }}
+      nodeAddress: {{ .Values.config.gradleEnterprice.nodeAddress | quote }}
+      key: {{ .Values.config.gradleEnterprice.key | quote }}
+      secret: {{ .Values.config.gradleEnterprice.secret | quote }}
+    {{- end }}
+    cache:
+      targetSize: {{ .Values.config.targetSize }}
+      maxArtifactSize: {{ .Values.config.maxArtifactSize }}
+      credentials:
+        anonymousLevel: {{ .Values.config.anonymousLevel | quote }}
+        users:
+{{ toYaml .Values.config.apiUsers | indent 10 }}
+    uiAccess:
+{{ toYaml .Values.config.uiAccess | indent 6 }}
+{{- end }}

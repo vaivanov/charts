@@ -1,0 +1,29 @@
+# @formatter:off
+{{- if .Values.ingress.enabled }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "gradle-build-cache-node.fullname" . }}
+  labels:
+    app: {{ template "gradle-build-cache-node.name" . }}
+    chart: {{ template "gradle-build-cache-node.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  rules:
+    {{- if .Values.ingress.hostName }}
+    - host: {{ .Values.ingress.hostName }}
+      http:
+    {{- else }}
+    - http:
+    {{- end }}
+        paths:
+          - path: {{ .Values.ingress.path }}
+            backend:
+              serviceName: {{ template "gradle-build-cache-node.fullname" . }}
+              servicePort: {{ .Values.service.externalPort }}
+{{- end }}

@@ -1,0 +1,139 @@
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+image:
+  repository: gradle/build-cache-node
+  tag: 8.1
+  pullPolicy: IfNotPresent
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ##
+  # pullSecrets:
+  #   - myRegistrKeySecretName
+
+existingConfigMap: false
+
+
+## ref: https://docs.gradle.com/build-cache-node/#editing_the_file
+
+config:
+  targetSize: 10000
+  maxArtifactSize: 10000
+
+  gradleEnterprice:
+    enabled: false
+    serverAddress: "https://ge-hostname"
+    nodeAddress: "https://node-hostname"
+    key: "key"
+    secret: "secret"
+
+  anonymousLevel: "READ"
+
+  apiUsers:
+    - username: "ci-user"
+      level: "READWRITE"
+      # default is "ci-password"
+      # learn how to generate password here https://docs.gradle.com/build-cache-node/#generating_password_hashes
+      password:
+        algorithm: "sha256"
+        hash: "982b2483cdc4106d6f2fee755adbbdb37d0da915d01f215b6a83e790adea1c12"
+        salt: "101d0af5fd44ade9c99935068c1edf27c35ac03382043148087d44633c981eed"
+  uiAccess:
+    username: "ui-user"
+    # default is "ui-password"
+    # learn how to generate password here https://docs.gradle.com/build-cache-node/#generating_password_hashes
+      # don't forget to change health check basic auth if you change ui password
+    password:
+      algorithm: "sha256"
+      hash: "1b4909d23e4b1c88181d5a21ff42b055579472a0e35d08c9a4d0a56f2a050753"
+      salt: "6253e842bf5441d4b9468fd1627e054a45144564a9dc79bb2118a6c0db1849f8"
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 1Gi
+  # requests:
+  #   cpu: 100m
+  #   memory: 1Gi
+
+terminationGracePeriodSeconds: 10
+
+service:
+  type: NodePort
+  externalPort: 80
+
+ingress:
+  ## Set to true to enable ingress record generation
+  enabled: false
+
+  path: /
+
+  ## The list of hostnames to be covered with this ingress record.
+  ## Most likely this will be just one host, but in the event more hosts are needed, this is an array
+  ## hostName: foo.bar.com
+
+  ## Ingress annotations done as key:value pairs
+  annotations:
+   kubernetes.io/ingress.class: nginx
+
+nodeSelector: {}
+
+tolerations: []
+
+livenessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 10
+  httpGet:
+    path: /
+    port: http
+    httpHeaders:
+      - name: Authorization
+        # base64 encoded value of "ui-user:ui-user"
+        value: Basic dWktdXNlcjp1aS11c2Vy
+
+readinessProbe:
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 6
+  httpGet:
+    path: /
+    port: http
+    httpHeaders:
+      - name: Authorization
+        # base64 encoded value of "ui-user:ui-user"
+        value: Basic dWktdXNlcjp1aS11c2Vy
+
+extraVolumes: []
+
+extraVolumeMounts: []
+
+## Pod affinity
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+podAntiAffinity: soft
+podAntiAffinityTopologyKey: "kubernetes.io/hostname"
+
+
+persistence:
+  enabled: false
+  ## Set annotations on pvc
+  annotations: {}
+
+  ## Specify an existing volume claim instead of creating a new one.
+  ## When using this option all following options like storageClass, accessMode and size are ignored.
+  # existingClaim:
+
+  ## If defined, storageClassName: <storageClass>
+  ## If set to "-", storageClassName: "", which disables dynamic provisioning
+  ## If undefined (the default) or set to null, no storageClassName spec is
+  ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+  ##   GKE, AWS & OpenStack)
+  ##
+  # storageClass: "-"
+  # accessMode: ReadWriteOnce
+  # size: 10Gi
