@@ -93,8 +93,8 @@ livenessProbe:
     port: http
     httpHeaders:
       - name: Authorization
-        # base64 encoded value of "ui-user:ui-user"
-        value: Basic dWktdXNlcjp1aS11c2Vy
+        # base64 encoded value of "ui-user:ui-password"
+        value: Basic dWktdXNlcjp1aS1wYXNzd29yZA==
 
 readinessProbe:
   initialDelaySeconds: 10
@@ -106,8 +106,8 @@ readinessProbe:
     port: http
     httpHeaders:
       - name: Authorization
-        # base64 encoded value of "ui-user:ui-user"
-        value: Basic dWktdXNlcjp1aS11c2Vy
+        # base64 encoded value of "ui-user:ui-password"
+        value: Basic dWktdXNlcjp1aS1wYXNzd29yZA==
 
 extraVolumes: []
 
