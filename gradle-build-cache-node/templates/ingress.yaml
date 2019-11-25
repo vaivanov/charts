@@ -26,4 +26,12 @@ spec:
             backend:
               serviceName: {{ template "gradle-build-cache-node.fullname" . }}
               servicePort: {{ .Values.service.externalPort }}
+{{- if .Values.ingress.tls }}
+  tls:
+    - secretName: {{  .Values.ingress.tlsSecret }}
+      {{- if .Values.ingress.hostName }}
+      hosts:
+        - {{ .Values.ingress.hostName }}
+      {{- end }}
+{{- end }}
 {{- end }}
