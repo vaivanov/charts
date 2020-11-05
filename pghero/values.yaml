@@ -1,0 +1,164 @@
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+command: []
+args: []
+
+image:
+  registry: docker.io
+  repository: ankane/pghero
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+deploymentAnnotations: {}
+podAnnotations: {}
+affinity: {}
+nodeSelector: {}
+tolerations: []
+
+livenessProbe:
+  enabled: true
+  path: /health
+  port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 5
+
+readinessProbe:
+  enabled: true
+  path: /health
+  port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+containerPort:
+  http: 8080
+
+service:
+  ## Service type.
+  ##
+  type: ClusterIP
+  ## Service port.
+  ##
+  port: 8080
+  ## Specify the nodePort value for the LoadBalancer and NodePort service types.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
+  ##
+  # nodePort:
+  ## Service clusterIP.
+  ##
+  # clusterIP: None
+  ## Enable client source IP preservation
+  ## ref http://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
+  ##
+  externalTrafficPolicy: Cluster
+  ## Set the LoadBalancer service type to internal only.
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  ##
+  # loadBalancerIP:
+  ## Load Balancer sources.
+  ## https://kubernetes.io/docs/tasks/access-application-cluster/configure-cloud-provider-firewall/#restrict-access-for-loadbalancer-service
+  ##
+  # loadBalancerSourceRanges:
+  # - 10.10.10.0/24
+  ## Provide any additional annotations which may be required. Evaluated as a template.
+  ##
+  annotations: {}
+
+
+ingress:
+  enabled: false
+  ## Annotations to be added to the ingress.
+  ##
+  # annotations:
+  #   kubernetes.io/ingress.class: nginx
+  #   kubernetes.io/tls-acme: "true"
+
+  ## Hostnames.
+  ## Must be provided if Ingress is enabled.
+  ##
+  # hosts:
+  #   - pghero.com
+
+  ## TLS configuration.
+  ## Secrets must be manually created in the namespace.
+  ##
+  # tls:
+  #   - secretName: pghero-tls
+  #     hosts:
+  #       - pghero.com
+
+envVars: []
+envFrom: []
+
+extraVolumes: []
+extraVolumeMounts: []
+
+
+config: |
+  databases:
+    primary:
+      # Database URL (defaults to app database)
+      # url: <%%= ENV["DATABASE_URL"] %>
+
+      # System stats
+      # aws_db_instance_identifier: my-instance
+      # gcp_database_id: my-project:my-instance
+      # azure_resource_id: my-resource-id
+
+    # Add more databases
+    # other:
+    #   url: <%%= ENV["OTHER_DATABASE_URL"] %>
+
+  # Minimum time for long running queries
+  # long_running_query_sec: 60
+
+  # Minimum average time for slow queries
+  # slow_query_ms: 20
+
+  # Minimum calls for slow queries
+  # slow_query_calls: 100
+
+  # Minimum connections for high connections warning
+  # total_connections_threshold: 500
+
+  # Statement timeout for explain
+  # explain_timeout_sec: 10
+
+  # Time zone (defaults to app time zone)
+  # time_zone: "Pacific Time (US & Canada)"
+
+  # Basic authentication
+  # username: admin
+  # password: <%%= ENV["PGHERO_PASSWORD"] %>
+
+  # Stats database URL (defaults to app database)
+  # stats_database_url: <%%= ENV["PGHERO_STATS_DATABASE_URL"] %>
+
+  # AWS configuration (defaults to app AWS config)
+  # aws_access_key_id: <%%= ENV["AWS_ACCESS_KEY_ID"] %>
+  # aws_secret_access_key: <%%= ENV["AWS_SECRET_ACCESS_KEY"] %>
+  # aws_region: us-east-1
+
+  # Filter data from queries (experimental)
+  # filter_data: true
+
+## DATABASE_URL (ignored if existingSecret set)
+##
+# databaseUrl:
+
+## Use existing secret (ignores previous databaseUrl)
+##
+# existingSecret:
+
+## database url key to be retrieved from the secret
+##
+# existingSecretKey:
