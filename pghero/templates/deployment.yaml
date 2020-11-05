@@ -2,11 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "pghero.fullname" . }}
-  labels:
-{{ include "pghero.labels" . | indent 4 }}
+  labels: {{ include "pghero.labels" . | nindent 4 }}
   {{- if .Values.deploymentAnnotations }}
-  annotations:
-    {{ toYaml .Values.deploymentAnnotations | indent 4 }}
+  annotations: {{ toYaml .Values.deploymentAnnotations | nindent 4 }}
   {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
@@ -20,13 +18,13 @@ spec:
         app: {{ include "pghero.name" . }}
         release: {{ .Release.Name }}
         {{- if .Values.podLabels }}
-          {{ toYaml .Values.podLabels | indent 8 }}
+        {{- toYaml .Values.podLabels | nindent 8 }}
         {{- end }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- if .Values.podAnnotations }}
-          {{ toYaml .Values.podAnnotations | indent 8 }}
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
         {{- end }}
     spec:
       {{- if or .Values.extraVolumes .Values.config }}
@@ -38,12 +36,12 @@ spec:
             name: {{ template "pghero.fullname" . }}
         {{- end }}
       {{- if .Values.extraVolumes }}
-        {{ toYaml .Values.extraVolumes | indent 8 }}
+      {{ toYaml .Values.extraVolumes | nindent 8 }}
       {{- end }}
       {{- end }}
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
-        {{ toYaml .Values.imagePullSecrets | indent 8 }}
+        {{ toYaml .Values.imagePullSecrets | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -51,11 +49,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.command }}
           command:
-            {{ toYaml .Values.command | indent 12 }}
+            {{ toYaml .Values.command | nindent 12 }}
           {{- end }}
           {{- if .Values.args }}
           args:
-            {{ toYaml .Values.args | indent 12 }}
+            {{ toYaml .Values.args | nindent 12 }}
           {{- end }}
           {{- if or .Values.extraVolumeMounts .Values.config }}
           {{- if .Values.config }}
@@ -66,7 +64,7 @@ spec:
               subPath: pghero.yml
           {{- end }}
             {{- if .Values.extraVolumeMounts }}
-              {{ toYaml .Values.extraVolumeMounts | indent 12 }}
+              {{ toYaml .Values.extraVolumeMounts | nindent 12 }}
             {{- end }}
           {{- end }}
           {{- if or .Values.databaseUrl .Values.existingSecret .Values.envVars }}
@@ -79,12 +77,12 @@ spec:
                   key: {{ template "pghero.existingSecretKey" . }}
           {{- end }}
             {{- if .Values.envVars }}
-              {{ toYaml .Values.envVars | indent 12 }}
+              {{- toYaml .Values.envVars | nindent 12 }}
             {{- end }}
           {{- end }}
           {{- if .Values.envFrom }}
           envFrom:
-            {{ toYaml .Values.envFrom | indent 12 }}
+            {{- toYaml .Values.envFrom | nindent 12 }}
           {{- end }}
           ports:
             - name: http
@@ -112,19 +110,19 @@ spec:
             successThreshold: {{ .Values.readinessProbe.successThreshold }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
           {{- end }}
-          {{- with .Values.resources }}
+          {{- if .Values.resources }}
           resources:
-            {{ toYaml . | indent 12 }}
+            {{ toYaml .Values.resources | nindent 12 }}
           {{- end }}
       {{- if .Values.nodeSelector }}
       nodeSelector:
-        {{ toYaml .Values.nodeSelector | indent 8 }}
+        {{ toYaml .Values.nodeSelector | nindent 8 }}
       {{- end }}
       {{- if .Values.affinity }}
       affinity:
-        {{ toYaml .Values.affinity | indent 8 }}
+        {{ toYaml .Values.affinity | nindent 8 }}
       {{- end }}
       {{- if .Values.tolerations }}
       tolerations:
-        {{ toYaml .Values.tolerations | indent 8 }}
+        {{ toYaml .Values.tolerations | nindent 8 }}
       {{- end }}

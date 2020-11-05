@@ -4,8 +4,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: {{ template "pghero.fullname" . }}
-  labels:
-{{ include "pghero.labels" . | indent 4 }}
+  labels: {{ include "pghero.labels" . | nindent 4 }}
 {{- if .Values.ingress.annotations }}
   annotations:
     {{- range $key, $value := .Values.ingress.annotations }}
@@ -23,7 +22,6 @@ spec:
               servicePort: http
     {{- end -}}
   {{- if .Values.ingress.tls }}
-  tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
+  tls: {{ toYaml .Values.ingress.tls | nindent 4 }}
   {{- end -}}
 {{- end -}}
