@@ -1,0 +1,88 @@
+{{- if .Values.cronjobs.captureSpaceStats.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "{{ template "pghero.fullname" . }}-capture-space-stats"
+  labels:
+{{ include "pghero.labels" . | indent 4 }}
+spec:
+  schedule: {{.Values.cronjobs.captureSpaceStats.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.cronjobs.captureSpaceStats.historyLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobs.captureSpaceStats.historyLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ include "pghero.name" . }}
+            release: {{ .Release.Name }}
+            {{- if .Values.cronjobs.captureSpaceStats.podLabels }}
+            {{ toYaml .Values.cronjobs.captureSpaceStats.podLabels | indent 12 }}
+            {{- end }}
+          annotations:
+            checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+            checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+            {{- if .Values.cronjobs.captureSpaceStats.podAnnotations }}
+            {{ toYaml .Values.cronjobs.captureSpaceStats.podAnnotations | indent 12 }}
+            {{- end }}
+        spec:
+          {{- if or .Values.extraVolumes .Values.config }}
+          volumes:
+            {{- if .Values.config }}
+            - name: configmap
+              configMap:
+                defaultMode: 0644
+                name: {{ template "pghero.fullname" . }}
+            {{- end }}
+          {{- if .Values.extraVolumes }}
+            {{ toYaml .Values.extraVolumes | indent 12 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{ toYaml .Values.imagePullSecrets | indent 12 }}
+          {{- end }}
+          restartPolicy: OnFailure
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- if .Values.cronjobs.captureSpaceStats.command }}
+            command:
+            {{ toYaml .Values.cronjobs.captureSpaceStats.command | indent 12 }}
+            {{- end }}
+            {{- if .Values.cronjobs.captureSpaceStats.args }}
+            args:
+            {{ toYaml .Values.cronjobs.captureSpaceStats.args | indent 12 }}
+            {{- end }}
+            {{- if or .Values.extraVolumeMounts .Values.config }}
+            {{- if .Values.config }}
+            volumeMounts:
+              - name: configmap
+                mountPath: /app/config/pghero.yml
+                readOnly: true
+                subPath: pghero.yml
+            {{- end }}
+            {{- if .Values.extraVolumeMounts }}
+              {{ toYaml .Values.extraVolumeMounts | indent 12 }}
+            {{- end }}
+            {{- end }}
+            {{- if or .Values.databaseUrl .Values.existingSecret .Values.cronjobs.captureSpaceStats.envVars }}
+            env:
+            {{- if or .Values.databaseUrl .Values.existingSecret }}
+              - name: DATABASE_URL
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "pghero.secretName" . }}
+                    key: {{ template "pghero.existingSecretKey" . }}
+            {{- end }}
+            {{- if .Values.cronjobs.captureSpaceStats.envVars }}
+              {{ toYaml .Values.cronjobs.captureSpaceStats.envVars | indent 12 }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.cronjobs.captureSpaceStats.envFrom }}
+            envFrom:
+              {{ toYaml .Values.cronjobs.captureSpaceStats.envFrom | indent 12 }}
+            {{- end }}
+{{- end }}

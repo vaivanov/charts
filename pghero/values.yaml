@@ -163,3 +163,43 @@ config: |
 ## database url key to be retrieved from the secret
 ##
 # existingSecretKey:
+
+cronjobs:
+
+  captureQueryStats:
+    enabled: false
+    podLabels: {}
+    ## Pod annotations
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    ##
+    podAnnotations: {}
+    ## Schedule in Cron format to save snapshots
+    ## See https://en.wikipedia.org/wiki/Cron
+    ##
+    schedule: "*/5 * * * *"
+    ## Number of successful finished jobs to retain
+    ##
+    historyLimit: 1
+    command: ["bin/rake"]
+    args: ["pghero:capture_query_stats"]
+    envVars: []
+    envFrom: []
+
+  captureSpaceStats:
+    enabled: false
+    podLabels: {}
+    ## Pod annotations
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    ##
+    podAnnotations: {}
+    ## Schedule in Cron format to save snapshots
+    ## See https://en.wikipedia.org/wiki/Cron
+    ##
+    schedule: "0 0 * * *"
+    ## Number of successful finished jobs to retain
+    ##
+    historyLimit: 1
+    command: ["bin/rake"]
+    args: ["pghero:capture_space_stats"]
+    envVars: []
+    envFrom: []
