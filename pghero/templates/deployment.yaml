@@ -66,9 +66,9 @@ spec:
 {{ toYaml .Values.extraVolumeMounts | indent 12 }}
           {{- end }}
           {{- end }}
-          {{- if or .Values.databaseUrl .Values.existingSecret .Values.envVars -}}
-          {{- if or .Values.databaseUrl .Values.existingSecret }}
+          {{- if or .Values.databaseUrl .Values.existingSecret .Values.envVars }}
           env:
+          {{- if or .Values.databaseUrl .Values.existingSecret }}
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
