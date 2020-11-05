@@ -15,6 +15,7 @@ imagePullSecrets: []
 
 deploymentAnnotations: {}
 podAnnotations: {}
+podLabels: {}
 affinity: {}
 nodeSelector: {}
 tolerations: []
