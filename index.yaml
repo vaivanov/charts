@@ -1,0 +1,35 @@
+apiVersion: v1
+entries:
+  gradle-build-cache-node:
+  - apiVersion: v1
+    appVersion: "9.4"
+    created: "2020-11-08T22:39:57.046303479Z"
+    description: The Gradle build cache node software is a freely available HTTP remote cache server for Gradle’s build caching functionality.
+    digest: 5912b4e70c90ee4170fb2a5165a03a2768d34ee79f68642993dc7c8215870ef7
+    home: https://github.com/vaivanov/charts/tree/master/charts/gradle-build-cache-node
+    maintainers:
+    - email: vlaxivanov@gmail.com
+      name: Vladimir Ivanov
+    name: gradle-build-cache-node
+    sources:
+    - https://docs.gradle.com/build-cache-node/
+    urls:
+    - https://github.com/vaivanov/charts/releases/download/gradle-build-cache-node-0.1.6/gradle-build-cache-node-0.1.6.tgz
+    version: 0.1.6
+  pghero:
+  - apiVersion: v1
+    appVersion: v2.7.2
+    created: "2020-11-08T22:39:57.206070438Z"
+    description: A performance dashboard for Postgres
+    digest: d50f45b8d4642915431e7983d965cca8e4c218d68e8342db5c97ab5e58465f7a
+    home: https://github.com/vaivanov/charts/tree/master/charts/pghero
+    maintainers:
+    - email: vlaxivanov@gmail.com
+      name: Vladimir Ivanov
+    name: pghero
+    sources:
+    - https://github.com/ankane/pghero
+    urls:
+    - https://github.com/vaivanov/charts/releases/download/pghero-0.3.3/pghero-0.3.3.tgz
+    version: 0.3.3
+generated: "2020-11-08T22:39:56.833641Z"
