@@ -4,7 +4,7 @@ description: The Gradle build cache node software is a freely available HTTP rem
 type: application
 apiVersion: v1
 appVersion: 9.3
-version: 0.1.4
+version: 0.1.5
 home: https://docs.gradle.com/gradle-build-cache-node/
 sources:
   - https://github.com/kubernetes/charts
