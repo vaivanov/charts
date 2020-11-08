@@ -6,7 +6,7 @@
 ## How to install
 
 ```bash
-$ helm repo add vaivanov https://<owner>.github.io/<project>
+$ helm repo add vaivanov https://vaivanov.github.io/charts
 $ helm search repo vaivanov
 $ helm install my-release vaivanov/<chart>
 ```
