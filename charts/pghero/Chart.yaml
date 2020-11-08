@@ -1,7 +1,11 @@
 apiVersion: v1
+appVersion: v2.7.2
 name: pghero
 description: A performance dashboard for Postgres
-type: application
 version: 0.3.2
-appVersion: v2.7.2
-home: https://github.com/ankane/pghero
+home: https://github.com/vaivanov/charts/tree/master/charts/pghero
+sources:
+  - https://github.com/ankane/pghero
+maintainers:
+  - name: Vladimir Ivanov
+    email: vlaxivanov@gmail.com

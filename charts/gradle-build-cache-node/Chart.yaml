@@ -1,10 +1,11 @@
 apiVersion: v1
+appVersion: 9.4
 name: gradle-build-cache-node
 description: The Gradle build cache node software is a freely available HTTP remote cache server for Gradle’s build caching functionality.
-type: application
-apiVersion: v1
-appVersion: 9.3
 version: 0.1.5
-home: https://docs.gradle.com/gradle-build-cache-node/
+home: https://github.com/vaivanov/charts/tree/master/charts/gradle-build-cache-node
 sources:
-  - https://github.com/kubernetes/charts
+  - https://docs.gradle.com/build-cache-node/
+maintainers:
+  - name: Vladimir Ivanov
+    email: vlaxivanov@gmail.com
