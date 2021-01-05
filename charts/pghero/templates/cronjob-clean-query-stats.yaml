@@ -1,0 +1,84 @@
+{{- if .Values.cronjobs.cleanQueryStats.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: "{{ template "pghero.fullname" . }}-clean-query-stats"
+  labels: {{ include "pghero.labels" . | nindent 4 }}
+spec:
+  schedule: {{.Values.cronjobs.cleanQueryStats.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: {{ .Values.cronjobs.cleanQueryStats.historyLimit }}
+  failedJobsHistoryLimit: {{ .Values.cronjobs.cleanQueryStats.historyLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: {{ include "pghero.name" . }}
+            release: {{ .Release.Name }}
+            {{- if .Values.cronjobs.cleanQueryStats.podLabels }}
+            {{- toYaml .Values.cronjobs.cleanQueryStats.podLabels | nindent 12 }}
+            {{- end }}
+          annotations:
+            checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+            checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+            {{- if .Values.cronjobs.cleanQueryStats.podAnnotations }}
+            {{- toYaml .Values.cronjobs.cleanQueryStats.podAnnotations | nindent 12 }}
+            {{- end }}
+        spec:
+          {{- if or .Values.extraVolumes .Values.config }}
+          volumes:
+            {{- if .Values.config }}
+            - name: configmap
+              configMap:
+                defaultMode: 0644
+                name: {{ template "pghero.fullname" . }}
+            {{- end }}
+            {{- if .Values.extraVolumes }}
+            {{ toYaml .Values.extraVolumes | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          {{- if .Values.imagePullSecrets }}
+          imagePullSecrets:
+          {{ toYaml .Values.imagePullSecrets | nindent 12 }}
+          {{- end }}
+          restartPolicy: OnFailure
+          containers:
+            - name: {{ .Chart.Name }}
+              image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
+              {{- if .Values.cronjobs.cleanQueryStats.command }}
+              command: {{ toYaml .Values.cronjobs.cleanQueryStats.command | nindent 14 }}
+              {{- end }}
+              {{- if .Values.cronjobs.cleanQueryStats.args }}
+              args: {{ toYaml .Values.cronjobs.cleanQueryStats.args | nindent 14 }}
+              {{- end }}
+              {{- if or .Values.extraVolumeMounts .Values.config }}
+              {{- if .Values.config }}
+              volumeMounts:
+                - name: configmap
+                  mountPath: /app/config/pghero.yml
+                  readOnly: true
+                  subPath: pghero.yml
+              {{- end }}
+              {{- if .Values.extraVolumeMounts }}
+                {{ toYaml .Values.extraVolumeMounts | nindent 14 }}
+              {{- end }}
+              {{- end }}
+              {{- if or .Values.databaseUrl .Values.existingSecret .Values.cronjobs.cleanQueryStats.envVars }}
+              env:
+              {{- if or .Values.databaseUrl .Values.existingSecret }}
+                - name: DATABASE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ template "pghero.secretName" . }}
+                      key: {{ template "pghero.existingSecretKey" . }}
+              {{- end }}
+              {{- if .Values.cronjobs.cleanQueryStats.envVars }}
+                {{- toYaml .Values.cronjobs.cleanQueryStats.envVars | nindent 14 }}
+              {{- end }}
+              {{- end }}
+              {{- if .Values.cronjobs.cleanQueryStats.envFrom }}
+              envFrom: {{ toYaml .Values.cronjobs.cleanQueryStats.envFrom | nindent 14 }}
+              {{- end }}
+{{- end }}

@@ -185,6 +185,25 @@ cronjobs:
     envVars: []
     envFrom: []
 
+  cleanQueryStats:
+    enabled: false
+    podLabels: {}
+    ## Pod annotations
+    ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+    ##
+    podAnnotations: {}
+    ## Schedule in Cron format to save snapshots
+    ## See https://en.wikipedia.org/wiki/Cron
+    ##
+    schedule: "* * */7 * *"
+    ## Number of successful finished jobs to retain
+    ##
+    historyLimit: 1
+    command: ["bin/rake"]
+    args: ["pghero:clean_query_stats"]
+    envVars: []
+    envFrom: []
+
   captureSpaceStats:
     enabled: false
     podLabels: {}
