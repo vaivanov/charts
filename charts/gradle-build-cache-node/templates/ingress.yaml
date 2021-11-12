@@ -1,6 +1,9 @@
-# @formatter:off
 {{- if .Values.ingress.enabled }}
-apiVersion: extensions/v1beta1
+{{- $ingressApiIsStable := eq (include "gradle-build-cache-node.ingress.isStable" .) "true" -}}
+{{- $ingressSupportsIngressClassName := eq (include "gradle-build-cache-node.ingress.supportsIngressClassName" .) "true" -}}
+{{- $ingressSupportsPathType := eq (include "gradle-build-cache-node.ingress.supportsPathType" .) "true" -}}
+{{- $ingressPathType := .Values.ingress.pathType | default "ImplementationSpecific" -}}
+apiVersion: {{ include "gradle-build-cache-node.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
   name: {{ include "gradle-build-cache-node.fullname" . }}
@@ -14,24 +17,29 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
+  {{- if and $ingressSupportsIngressClassName .Values.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
+  {{- end }}
   rules:
-    {{- if .Values.ingress.hostName }}
-    - host: {{ .Values.ingress.hostName }}
-      http:
-    {{- else }}
-    - http:
-    {{- end }}
-        paths:
-          - path: {{ .Values.ingress.path }}
-            backend:
-              serviceName: {{ template "gradle-build-cache-node.fullname" . }}
-              servicePort: {{ .Values.service.externalPort }}
+  - host: {{ .Values.ingress.host | quote }}
+    http:
+      paths:
+      - path: {{ .Values.ingress.path }}
+        {{- if $ingressSupportsPathType }}
+        pathType: {{ $ingressPathType }}
+        {{- end }}
+        backend:
+          {{- if $ingressApiIsStable }}
+          service:
+            name: {{ template "gradle-build-cache-node.fullname" . }}
+            port:
+              number: {{ .Values.service.externalPort }}
+          {{- else }}
+        serviceName: {{ template "gradle-build-cache-node.fullname" . }}
+        servicePort: {{ .Values.service.externalPort }}
+          {{- end }}
 {{- if .Values.ingress.tls }}
   tls:
-    - secretName: {{  .Values.ingress.tlsSecret }}
-      {{- if .Values.ingress.hostName }}
-      hosts:
-        - {{ .Values.ingress.hostName }}
-      {{- end }}
+{{ tpl (toYaml .Values.ingress.tls) $ | indent 4 }}
 {{- end }}
 {{- end }}

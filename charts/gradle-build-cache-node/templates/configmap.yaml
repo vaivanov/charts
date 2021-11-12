@@ -10,7 +10,7 @@ metadata:
     heritage: {{ .Release.Service }}
 data:
   config.yaml: |
-    version: 2
+    version: 3
     {{- if .Values.config.gradleEnterprice.enabled }}
     registration:
       serverAddress: {{ .Values.config.gradleEnterprice.serverAddress | quote }}
@@ -21,7 +21,8 @@ data:
     cache:
       targetSize: {{ .Values.config.targetSize }}
       maxArtifactSize: {{ .Values.config.maxArtifactSize }}
-      credentials:
+      maxEntryAgeInHours: {{ .Values.config.maxEntryAgeInHours }}
+      accessControl:
         anonymousLevel: {{ .Values.config.anonymousLevel | quote }}
         users:
 {{ toYaml .Values.config.apiUsers | indent 10 }}
