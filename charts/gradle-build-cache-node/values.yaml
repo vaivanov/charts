@@ -142,3 +142,9 @@ persistence:
   # storageClass: "-"
   # accessMode: ReadWriteOnce
   # size: 10Gi
+
+initContainer:
+  image:
+    repository: busybox
+    tag: 1.33.0
+    pullPolicy: IfNotPresent

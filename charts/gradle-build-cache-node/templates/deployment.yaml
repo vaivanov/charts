@@ -34,6 +34,20 @@ spec:
       {{- end }}
       {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      initContainers:
+        - name: {{ .Chart.Name }}-config-mounter
+          image: {{ .Values.initContainer.image.repository }}:{{ .Values.initContainer.image.tag }}
+          imagePullPolicy: {{ .Values.initContainer.image.pullPolicy }}
+          command: [
+              "sh",
+              "-ce",
+              "cp /tmp/config.yaml /data/conf/config.yaml" ]
+          volumeMounts:
+            - name: configmap
+              mountPath: /tmp/config.yaml
+              subPath: config.yaml
+            - name: build-cache-config-dir
+              mountPath: /data/conf
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -51,9 +65,8 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-            - name: configmap
-              mountPath: /data/conf/config.yaml
-              subPath: config.yaml
+            - name: build-cache-config-dir
+              mountPath: /data/conf
             {{- if .Values.extraVolumeMounts }}
 {{ toYaml .Values.extraVolumeMounts | indent 12 }}
             {{- end }}
@@ -90,6 +103,8 @@ spec:
                     release: {{ .Release.Name }}
       {{- end }}
       volumes:
+        - name: build-cache-config-dir
+          emptyDir: {}
         - name: configmap
           configMap:
             name: {{ template "gradle-build-cache-node.fullname" . }}
