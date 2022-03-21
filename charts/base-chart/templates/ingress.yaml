@@ -1,0 +1,60 @@
+{{- range $ingressName, $ingress := .Values.ingress }}
+{{- if and $ingress $ingress.enabled -}}
+{{- $serviceName := include "base-chart.fullname" $ -}}
+{{- $servicePort := $ingress.servicePort -}}
+{{- $ingressName := (printf "%s-%s" $serviceName $ingressName ) -}}
+{{- $ingressPath := $ingress.path | default "/" -}}
+{{- $ingressApiIsStable := eq (include "base-chart.ingress.isStable" $) "true" -}}
+{{- $ingressSupportsIngressClassName := eq (include "base-chart.ingress.supportsIngressClassName" $) "true" -}}
+{{- $ingressClassName := $ingress.ingressClassName -}}
+{{- $ingressSupportsPathType := eq (include "base-chart.ingress.supportsPathType" $) "true" -}}
+{{- $ingressPathType := $ingress.pathType | default "ImplementationSpecific" -}}
+apiVersion: {{ include "base-chart.ingress.apiVersion" $ }}
+kind: Ingress
+metadata:
+  name: {{ $ingressName }}
+  labels:
+{{ include "base-chart.labels" $ | indent 4 }}
+{{- if $ingress.annotations }}
+  annotations:
+    {{- range $key, $value := $ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+{{- end }}
+spec:
+  {{- if and $ingressSupportsIngressClassName $ingressClassName }}
+  ingressClassName: {{ $ingressClassName | quote }}
+  {{- end }}
+  rules:
+    {{- range $ingress.hosts }}
+    - host: {{ . | quote }}
+      http:
+        paths:
+          - path: {{ $ingressPath }}
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
+            backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ $serviceName }}
+                port:
+                  {{- if kindIs "float64" $servicePort }}
+                  number: {{ $servicePort }}
+                  {{- else }}
+                  name: {{ $servicePort }}
+                  {{- end }}
+              {{- else }}
+              serviceName: {{ $serviceName }}
+              servicePort: {{ $servicePort }}
+              {{- end }}
+    {{- end -}}
+  {{- if $ingress.tls }}
+  tls:
+{{ toYaml $ingress.tls | indent 4 }}
+  {{- end -}}
+{{- end -}}
+{{ printf "\n" }}
+---
+{{ printf "\n" }}
+{{- end -}}

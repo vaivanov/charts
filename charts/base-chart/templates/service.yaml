@@ -1,0 +1,31 @@
+# @formatter:off
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "base-chart.fullname" . }}
+  labels:
+{{ include "base-chart.labels" . | indent 4 }}
+{{ if .Values.service.annotations }}
+  annotations:
+    {{- range $key, $value := .Values.service.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+{{- end }}
+spec:
+  type: {{ .Values.service.type }}
+{{- if .Values.service.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.service.externalTrafficPolicy }}
+{{- end }}
+  ports:
+  {{- range $key, $value := .Values.service.ports }}
+    - name: {{ $key }}
+      port: {{ $value }}
+      protocol: TCP
+      targetPort: {{ index $.Values.service.targetPorts $key }}
+      {{- if index $.Values.service.nodePorts $key }}
+      nodePort: {{ index $.Values.service.nodePorts $key }}
+      {{- end }}
+  {{- end }}
+  selector:
+    app: {{ include "base-chart.name" . }}
+    release: {{ .Release.Name }}

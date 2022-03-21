@@ -1,0 +1,135 @@
+nameOverride: ""
+fullnameOverride: ""
+
+dnsPolicy: ClusterFirst
+dnsConfig: {}
+
+replicaCount: 1
+
+# metrics-server is required!
+hpa:
+  enabled: false
+  maxReplicas: 3
+  # target CPU utilization in percentages of request CPU per pod (1-100)
+  # cpu: 50
+  # target memory utilization in percentages of request memory per pod (1-100)
+  # memory: 50
+  # custom:
+  #   metricName: "nginx_ingress_requests_per_min"
+  #   objectKind: "Ingress"
+  #   objectName: "ingress-name"
+  #   targetValue: 5k
+
+serviceAccount:
+  # Specifies whether a ServiceAccount should be created
+  create: false
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+  # Additional annotations for the ServiceAccount
+  annotations: {}
+  # Additional labels for the ServiceAccount
+  labels: {}
+
+image:
+  registry: docker.io
+  pullPolicy: IfNotPresent
+
+command: []
+args: []
+imagePullSecrets: []
+
+deploymentAnnotations: {}
+
+deploymentStrategy: {}
+#   type: RollingUpdate
+#   rollingUpdate:
+#     maxUnavailable: 25%
+#     maxSurge: 25%
+
+podAnnotations: {}
+podLabels: {}
+affinity: {}
+differentNodes: false
+differentAZ: false
+nodeSelector: {}
+tolerations: []
+terminationGracePeriodSeconds: 30
+
+livenessProbe:
+  enabled: false
+  path: /healthz
+  port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 5
+
+readinessProbe:
+  enabled: false
+  path: /healthz
+  port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+containerPort:
+  http: 80
+
+service:
+  type: ClusterIP
+
+  ports:
+    http: 80
+
+  targetPorts:
+    http: http
+
+  nodePorts: {}
+
+  annotations: {}
+
+headlessService:
+  enabled: false
+
+ingress:
+  default:
+    enabled: false
+    servicePort: http
+    # For Kubernetes >= 1.18 you should specify the ingress-controller via the field ingressClassName
+    # See https://kubernetes.io/blog/2020/04/02/improvements-to-the-ingress-api-in-kubernetes-1.18/#specifying-the-class-of-an-ingress
+    # ingressClassName: nginx
+    # Values can be templated
+    # annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+
+    path: /
+
+    # pathType is only for k8s >= 1.1=
+    pathType: Prefix
+
+    ## Hostnames.
+    ## Must be provided if Ingress is enabled.
+    ##
+    # hosts:
+    #   - test.localhost.com
+
+    ## TLS configuration.
+    ## Secrets must be manually created in the namespace.
+    ##
+    # tls:
+    #   - secretName: localhost-tls
+    #     hosts:
+    #       - test.localhost.com
+
+appVersionEnv: false
+envVars: []
+envVarsMap: {}
+envFrom: []
+
+extraVolumes: []
+extraVolumeMounts: []
