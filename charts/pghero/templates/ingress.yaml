@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled -}}
 {{- $serviceName := include "pghero.fullname" . -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ template "pghero.fullname" . }}
@@ -12,14 +12,21 @@ metadata:
     {{- end }}
 {{- end }}
 spec:
+  {{- if .Values.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
+  {{- end }}
   rules:
     {{- range .Values.ingress.hosts }}
     - host: {{ . }}
       http:
         paths:
-          - backend:
-              serviceName: {{ $serviceName }}
-              servicePort: http
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $serviceName }}
+                port:
+                  name: http
     {{- end -}}
   {{- if .Values.ingress.tls }}
   tls: {{ toYaml .Values.ingress.tls | nindent 4 }}

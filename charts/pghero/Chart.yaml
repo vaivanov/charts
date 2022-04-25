@@ -2,7 +2,7 @@ apiVersion: v1
 appVersion: v2.7.2
 name: pghero
 description: A performance dashboard for Postgres
-version: 0.4.0
+version: 0.4.1
 home: https://github.com/vaivanov/charts/tree/master/charts/pghero
 sources:
   - https://github.com/ankane/pghero
