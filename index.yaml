@@ -108,6 +108,21 @@ entries:
   pghero:
   - apiVersion: v1
     appVersion: v2.7.2
+    created: "2022-04-25T17:03:17.500110635Z"
+    description: A performance dashboard for Postgres
+    digest: 3cff7d32bca0e9949085edf524f3e49c5581daf8d01701704b470d107c0daec4
+    home: https://github.com/vaivanov/charts/tree/master/charts/pghero
+    maintainers:
+    - email: vlaxivanov@gmail.com
+      name: Vladimir Ivanov
+    name: pghero
+    sources:
+    - https://github.com/ankane/pghero
+    urls:
+    - https://github.com/vaivanov/charts/releases/download/pghero-0.4.0/pghero-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v1
+    appVersion: v2.7.2
     created: "2021-01-05T12:05:42.951374776Z"
     description: A performance dashboard for Postgres
     digest: 86240864c81f6e53a7ad9f881d01af96a7f38e578f375410bce5eaa63557b351
