@@ -1,6 +1,19 @@
 apiVersion: v1
 entries:
   base-chart:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-05-27T09:00:14.913380276Z"
+    description: base-chart
+    digest: 58995d8ab55a1b47b27121198fa0eb046aba16da6c09742a1165db26e84abe6b
+    home: https://github.com/vaivanov/charts
+    name: base-chart
+    sources:
+    - https://github.com/vaivanov/charts
+    type: application
+    urls:
+    - https://github.com/vaivanov/charts/releases/download/base-chart-1.0.1/base-chart-1.0.1.tgz
+    version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.0
     created: "2022-03-21T15:08:15.301427693Z"
