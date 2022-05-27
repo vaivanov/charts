@@ -80,6 +80,18 @@ readinessProbe:
   successThreshold: 1
   failureThreshold: 3
 
+startupProbe:
+  enabled: false
+  type: http
+  path: /healthz
+  port: http
+  execCommand: []
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
 containerPort:
   http: 80
 
