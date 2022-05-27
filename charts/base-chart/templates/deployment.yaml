@@ -99,9 +99,9 @@ spec:
               path: {{ .Values.livenessProbe.path }}
               port: {{ .Values.livenessProbe.port }}
             {{- else if eq .Values.livenessProbe.type "exec" }}
-              exec:
-                command:
-{{ toYaml .Values.livenessProbe.execCommand | indent 18 }}
+            exec:
+              command:
+{{ toYaml .Values.livenessProbe.execCommand | indent 16 }}
             {{- end }}
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             timeoutSeconds: {{ .Values.livenessProbe.periodSeconds }}
@@ -116,9 +116,9 @@ spec:
               path: {{ .Values.readinessProbe.path }}
               port: {{ .Values.readinessProbe.port }}
             {{- else if eq .Values.readinessProbe.type "exec" }}
-              exec:
-                command:
-{{ toYaml .Values.readinessProbe.execCommand | indent 18 }}
+            exec:
+              command:
+{{ toYaml .Values.readinessProbe.execCommand | indent 16 }}
             {{- end }}
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.periodSeconds }}
